@@ -1,0 +1,236 @@
+<html>
+  <head>
+    <title>ESP32-CAM Robot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body { 
+        font-family: Arial; 
+        text-align: center; 
+        margin: 0 auto; 
+        padding-top: 30px;
+    }
+      table { margin-left: auto; margin-right: auto; }
+      td { padding: 8 px; }
+      .button {
+        background-color: #2f4468;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 18px;
+        margin: 6px 3px;
+        cursor: pointer;
+        border-radius: 5px;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      }
+      img {  
+        width: auto ;
+        max-width: 100% ;
+        height: auto ; 
+      }
+      .motionAndSpeed{
+    column-count: 2;
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin-bottom: 6px;
+	}
+  #motion{
+    height: 30px;
+    width: 110px;
+    border: 2px solid #e8e6e6;
+    border-radius: 5px;
+    padding: 2px 5px;
+    cursor: pointer;
+  }
+  option{
+    cursor: pointer;
+  }
+  .speedDec {
+	background-color: #e8e6e6;
+	color: #ae2727;
+	text-align: center;
+	border-radius: 50%;
+	border: none;
+	font-size: 25px;
+	margin-right: 20px;
+	padding: 6px 16px;
+    font-weight: bold;
+    cursor: pointer;
+	}
+  .speedInc{
+	background-color: #e8e6e6;
+	color: #27ae60;
+	text-align: center;
+	border-radius: 50%;
+	border: none;
+	font-size: 25px;
+	padding: 6px 12px;
+    font-weight: bold;
+    cursor: pointer;
+	}
+  .switch-container{
+    text-align: start;
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+  }
+    .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    }
+
+    .switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+    }
+
+    .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+    }
+
+    .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    }
+
+    input:checked + .slider {
+    background-color: #27ae60;
+    }
+
+    input:focus + .slider {
+    box-shadow: 0 0 1px #27ae60;
+    }
+
+    input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+    border-radius: 34px;
+    }
+
+    .slider.round:before {
+    border-radius: 50%;
+    }	
+    </style>
+  </head>
+  <body>
+    <h1>ESP32-CAM Robot</h1>
+    <div class="motionAndSpeed" style="margin-left: -25px;">
+      <label for="Motion">Motion: </label>
+      <label for="speed">Speed: </label>
+    </div>
+    <div class="motionAndSpeed">
+      <select name="motion" id="motion" onchange="changeMotion()">
+        <option value="manual">Manual</option>
+        <option value="auto">Auto</option>
+        <option value="path">Play Path</option>
+      </select>
+      <span>
+        <button class="speedDec" onmousedown="toggleCheckbox('decrease');"
+          ontouchstart="toggleCheckbox('decrease');">-</button>
+        <button class="speedInc" onmousedown="toggleCheckbox('increase');"
+          ontouchstart="toggleCheckbox('increase');">+</button>
+      </span>
+    </div>
+    <br>
+    <table>
+      <tr>
+        <td colspan="3" align="center"><button class="button"
+            onmousedown="toggleCheckbox('forward');"
+            ontouchstart="toggleCheckbox('forward');"
+            onmouseup="toggleCheckbox('stop');"
+            ontouchend="toggleCheckbox('stop');">Forward</button>
+        </td>
+      </tr>
+      <tr>
+        <td align="center"><button class="button"
+            onmousedown="toggleCheckbox('left');"
+            ontouchstart="toggleCheckbox('left');"
+            onmouseup="toggleCheckbox('stop');"
+            ontouchend="toggleCheckbox('stop');">Left</button></td>
+        <td align="center"><button class="button"
+            onmousedown="toggleCheckbox('stop');"
+            ontouchstart="toggleCheckbox('stop');">Stop</button></td>
+        <td align="center"><button class="button"
+            onmousedown="toggleCheckbox('right');"
+            ontouchstart="toggleCheckbox('right');"
+            onmouseup="toggleCheckbox('stop');"
+            ontouchend="toggleCheckbox('stop');">Right</button></td>
+      </tr>
+      <tr>
+        <td colspan="3" align="center"><button class="button"
+            onmousedown="toggleCheckbox('backward');"
+            ontouchstart="toggleCheckbox('backward');"
+            onmouseup="toggleCheckbox('stop');"
+            ontouchend="toggleCheckbox('stop');">Backward</button>
+        </td>
+      </tr>
+    </table>
+    <br><br>
+    <div class="switch-container">
+      <label for="SavePath">Turn on LED:</label>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+    <br>
+    <div class="switch-container">
+      <label for="SavePath">Save Path:</label>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <script>
+   function toggleCheckbox(x) {
+     var xhr = new XMLHttpRequest();
+     xhr.open("GET", "/action?go=" + x, true);
+     xhr.send();
+   }
+   window.onload = document.getElementById("photo").src = window.location.href.slice(0, -1) + ":81/stream";
+
+   function changeMotion() {
+      const selectedMotion = document.getElementById('motion').value;
+      console.log(selectedMotion)
+   }
+  </script>
+  </body>
+</html>
