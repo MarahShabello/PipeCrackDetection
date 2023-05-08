@@ -153,7 +153,7 @@
     <h1>ESP32-CAM Robot</h1>
     <div class="motionAndSpeed" style="margin-left: -25px;">
       <label for="Motion">Motion: </label>
-      <label for="speed">Speed: </label>
+      <label for="speed" id="speed-label">Speed: </label>
     </div>
     <div class="motionAndSpeed">
       <select name="motion" id="motion" onchange="changeMotion()">
@@ -161,7 +161,7 @@
         <option value="auto">Auto</option>
         <option value="path">Play Path</option>
       </select>
-      <span>
+      <span id="speed-btns">
         <button class="speedDec" onmousedown="toggleCheckbox('decrease');"
           ontouchstart="toggleCheckbox('decrease');">-</button>
         <button class="speedInc" onmousedown="toggleCheckbox('increase');"
@@ -169,7 +169,7 @@
       </span>
     </div>
     <br>
-    <table>
+    <table id="motion-btns">
       <tr>
         <td colspan="3" align="center"><button class="button"
             onmousedown="toggleCheckbox('forward');"
@@ -229,7 +229,27 @@
 
    function changeMotion() {
       const selectedMotion = document.getElementById('motion').value;
-      console.log(selectedMotion)
+      const speedBtns = document.getElementById('speed-btns');
+      const speedLabel = document.getElementById('speed-label');
+      const switchContainer = document.getElementsByClassName('switch-container');
+      const motionBtns = document.getElementById('motion-btns');
+
+      console.log(selectedMotion);
+      if (selectedMotion === 'auto') {
+        motionBtns.style.visibility = 'hidden';
+      }
+      else if (selectedMotion === 'path') {
+        speedBtns.style.visibility = 'hidden';
+        speedLabel.style.visibility = 'hidden';
+        switchContainer[1].style.visibility = 'hidden';
+        motionBtns.style.visibility = 'hidden';
+      }
+      else if (selectedMotion === 'manual') {
+        speedBtns.style.visibility = 'visible';
+        speedLabel.style.visibility = 'visible';
+        switchContainer[1].style.visibility = 'visible';
+        motionBtns.style.visibility = 'visible';
+      }
    }
   </script>
   </body>
